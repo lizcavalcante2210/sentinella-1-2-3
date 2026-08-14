@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<title>Hospital Conhecimento</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+
+</head>
+
+<body>
+
+
+<div class="background-glow"></div>
+
+<div class="container">
+
+    <div class="logo-area">
+
+        <img
+            src="logo-hospital.png.png"
+            alt="Logo Hospital Conhecimento"
+            class="hospital-logo"
+        >
+
+        <div class="logo-line"></div>
+
+        <h2>Bem-vindo!</h2>
+
+        <p class="subtitle">
+            Sistema Hospitalar
+        </p>
+
+    </div>
+
+
+    <div class="login-area">
+
+        <label for="usuario">
+            Usuário
+        </label>
+
+        <input
+            id="usuario"
+            type="text"
+            placeholder="Digite seu usuário"
+        >
+
+
+        <label for="senha">
+            Senha
+        </label>
+
+        <input
+            id="senha"
+            type="password"
+            placeholder="Digite sua senha"
+        >
+
+
+        <button onclick="login()">
+            Entrar
+            <span>→</span>
+        </button>
+
+
+        <div class="security">
+            ◆ Acesso restrito ao pessoal autorizado
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    async function login() {
+
+        const usuario =
+            document.getElementById("usuario").value.trim();
+
+        const senha =
+            document.getElementById("senha").value.trim();
+
+
+        if (!usuario || !senha) {
+
+            alert("Digite o usuário e a senha.");
+
+            return;
+        }
+
+
+        try {
+
+            const response = await fetch("/login", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    usuario: usuario,
+                    senha: senha
+                })
+
+            });
+
+
+            const data = await response.json();
+
+
+            if (!response.ok) {
+
+                alert(
+                    data.erro ||
+                    "Usuário ou senha incorretos."
+                );
+
+                return;
+            }
+
+
+            if (data.tipo === "triagem") {
+
+                location.href = "triagem.html";
+
+            }
+
+            else if (data.tipo === "medico") {
+
+                location.href = "medico.html";
+
+            }
+
+            else if (data.tipo === "atendimento") {
+
+                location.href = "atendimento.html";
+
+            }
+
+            else {
+
+                alert("Tipo de usuário não reconhecido.");
+
+            }
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                "Não foi possível conectar ao servidor."
+            );
+
+        }
+
+    }
+
+</script>
+
+
+</body>
+
+</html>
