@@ -1,15 +1,15 @@
 {
   "name": "hospital-system",
   "version": "1.0.0",
-  "main": "api/index.js",
+  "main": "backend/index.js",
   "scripts": {
-    "start": "api/index.js
+    "start": "node backend/index.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^5.2.1"
   },
-  "description": "",
+  "description": "Sistema Hospitalar",
   "keywords": [],
   "author": "",
   "license": "ISC",
