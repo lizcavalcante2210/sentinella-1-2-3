@@ -95,15 +95,31 @@ function cadastrar(){
         },
         body:JSON.stringify(paciente)
     })
-    .then(res=>res.json())
-    .then(()=>{
+    .then(async resposta=>{
+
+        const dados = await resposta.json();
+
+        if(!resposta.ok){
+            throw new Error(dados.mensagem);
+        }
+
         alert("Paciente cadastrado com sucesso!");
+
+        document.querySelectorAll("input, textarea").forEach(c=>c.value="");
+
+        document.querySelectorAll("select").forEach(c=>c.selectedIndex=0);
+
     })
-    .catch(()=>{
-        alert("Erro ao cadastrar paciente.");
+    .catch(err=>{
+
+        console.error(err);
+
+        alert("Erro: "+err.message);
+
     });
 
 }
+
 </script>
 
 </body>
