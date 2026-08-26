@@ -69,7 +69,7 @@
 </div>
 
 <script>
-function cadastrar(){
+async function cadastrar() {
 
     const paciente = {
         nome: nome.value,
@@ -88,37 +88,34 @@ function cadastrar(){
         observacoes: observacoes.value
     };
 
-    fetch("http://localhost:3000/atendimento",{
-        method:"POST",
-        headers:{
-            "Content-Type":"application/json"
-        },
-        body:JSON.stringify(paciente)
-    })
-    .then(async resposta=>{
+    try {
+
+        const resposta = await fetch("http://localhost:3000/atendimento", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(paciente)
+        });
 
         const dados = await resposta.json();
 
-        if(!resposta.ok){
-            throw new Error(dados.mensagem);
+        console.log(dados);
+
+        if (!resposta.ok) {
+            throw new Error(dados.mensagem || "Erro");
         }
 
-        alert("Paciente cadastrado com sucesso!");
+        alert("Paciente cadastrado!");
 
-        document.querySelectorAll("input, textarea").forEach(c=>c.value="");
+    } catch (erro) {
 
-        document.querySelectorAll("select").forEach(c=>c.selectedIndex=0);
+        console.error(erro);
+        alert(erro.message);
 
-    })
-    .catch(err=>{
-
-        console.error(err);
-
-        alert("Erro: "+err.message);
-
-    });
-
+    }
 }
+
 
 </script>
 
