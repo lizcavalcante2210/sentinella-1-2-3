@@ -1,218 +1,78 @@
-const express = require("express");
-const fs = require("fs");
-const path = require("path");
-const cors = require("cors");
-
-const app = express();
-
-app.use(express.json());
-app.use(cors());
-
-app.use(express.static(path.join(__dirname, "../frontend")));
-
-const DB_FILE = path.join(__dirname, "db.json");
-
-function readDB() {
-  if (!fs.existsSync(DB_FILE)) {
-    return {
-      usuarios: [],
-      pacientes: [],
-      triagens: [],
-      consultas: [],
-      tv_chamada: null,
-      tv_historico: []
-    };
-  }
-
-  const db = JSON.parse(fs.readFileSync(DB_FILE, "utf8"));
-
-  if (!db.tv_chamada) {
-    db.tv_chamada = null;
-  }
-
-  if (!db.tv_historico) {
-    db.tv_historico = [];
-  }
-
-  return db;
-}
-
-function writeDB(data) {
-  fs.writeFileSync(
-    DB_FILE,
-    JSON.stringify(data, null, 2),
-    "utf8"
-  );
-}
-
-// LOGIN
-app.post("/login", (req, res) => {
-  const db = readDB();
-
-  const user = db.usuarios.find(
-    (u) =>
-      u.usuario === req.body.usuario &&
-      u.senha === req.body.senha
-  );
-
-  if (!user) {
-    return res.status(401).json({
-      erro: "Login inválido"
-    });
-  }
-
-  res.json(user);
-});
-
-// ATENDIMENTO - cadastrar paciente
 app.post("/atendimento", (req, res) => {
-  try {
-    const db = readDB();
 
-    const paciente = {
-      id: Date.now(),
+    try {
 
-      nome: req.body.nome,
-      cpf: req.body.cpf,
-      nascimento: req.body.nascimento,
-      sexo: req.body.sexo,
-      telefone: req.body.telefone,
-      email: req.body.email,
+        const db = readDB();
 
-      endereco: req.body.endereco,
-      cidade: req.body.cidade,
-      estado: req.body.estado,
+        const paciente = {
 
-      tipo: req.body.tipo,
-      convenio: req.body.convenio,
+            id: Date.now(),
 
-      alergias: req.body.alergias,
-      tipoSanguineo: req.body.tipoSanguineo,
-      observacoes: req.body.observacoes,
+            nome: req.body.nome || "",
+            cpf: req.body.cpf || "",
+            nascimento: req.body.nascimento || "",
+            sexo: req.body.sexo || "",
 
-      status: "triagem",
-      createdAt: new Date().toISOString()
-    };
+            telefone: req.body.telefone || "",
+            email: req.body.email || "",
 
-    db.pacientes.push(paciente);
+            endereco: req.body.endereco || "",
+            cidade: req.body.cidade || "",
+            estado: req.body.estado || "",
 
-    writeDB(db);
+            tipo: req.body.tipo || "Particular",
+            convenio: req.body.convenio || "",
 
-    res.status(201).json({
-      sucesso: true,
-      paciente
-    });
+            alergias: req.body.alergias || "",
+            tipoSanguineo: req.body.tipoSanguineo || "",
 
-  } catch (erro) {
+            observacoes: req.body.observacoes || "",
 
-    console.error(erro);
+            status: "triagem",
 
-    res.status(500).json({
-      sucesso: false,
-      mensagem: "Erro ao salvar paciente."
-    });
+            createdAt: new Date().toISOString()
 
-  }
-});
+        };
 
 
-// ==================================================
-// MÍDIA INDOOR - TV
-// ==================================================
+        db.pacientes.push(paciente);
 
-// CHAMAR PACIENTE NA TV
-app.post("/tv/chamar", (req, res) => {
-  const db = readDB();
+        writeDB(db);
 
-  const chamada = {
-    id: Date.now().toString(),
-    localTipo: req.body.localTipo,
-    localNumero: req.body.localNumero,
-    paciente: req.body.paciente,
-    hora: new Date().toLocaleTimeString("pt-BR", {
-      hour: "2-digit",
-      minute: "2-digit"
-    })
-  };
 
-  db.tv_chamada = chamada;
+        console.log("================================");
+        console.log("PACIENTE CADASTRADO");
+        console.log(paciente);
+        console.log("================================");
 
-  db.tv_historico.unshift(chamada);
 
-  if (db.tv_historico.length > 5) {
-    db.tv_historico.pop();
-  }
+        res.status(201).json({
 
-  writeDB(db);
+            sucesso: true,
 
-  res.json(chamada);
-});
+            mensagem: "Paciente cadastrado com sucesso",
 
-// CONSULTAR CHAMADA ATUAL E HISTÓRICO
-app.get("/tv/chamada", (req, res) => {
-  const db = readDB();
+            paciente: paciente
 
-  res.json({
-    chamada: db.tv_chamada,
-    historico: db.tv_historico
-  });
-});
+        });
 
-// ==================================================
-// LISTA DE MEDICAÇÕES
-// ==================================================
 
-app.get("/lista-medicacoes", (req, res) => {
-  res.json([
-    "Dipirona",
-    "Paracetamol",
-    "Ibuprofeno",
-    "Amoxicilina",
-    "Azitromicina",
-    "Loratadina",
-    "Omeprazol",
-    "Buscopan",
-    "Dramin",
-    "Soro fisiológico"
-  ]);
-});
+    } catch (erro) {
 
-// ==================================================
-// CONSULTA
-// ==================================================
+        console.error(
+            "ERRO AO SALVAR PACIENTE:",
+            erro
+        );
 
-app.post("/consulta", (req, res) => {
-  const db = readDB();
 
-  const consulta = {
-    id: Date.now(),
-    paciente: req.body.paciente,
-    diagnostico: req.body.diagnostico,
-    medicacao: req.body.medicacao,
-    obs: req.body.obs,
-    createdAt: new Date()
-  };
+        res.status(500).json({
 
-  db.consultas.push(consulta);
+            sucesso: false,
 
-  writeDB(db);
+            mensagem: "Erro interno ao salvar paciente"
 
-  res.json(consulta);
-});
+        });
 
-// MEDICAÇÕES / CONSULTAS
-app.get("/medicacoes", (req, res) => {
-  const db = readDB();
+    }
 
-  res.json(db.consultas);
-});
-
-// ==================================================
-// START DO SERVIDOR
-// ==================================================
-
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log(`Porta ${PORT}`);
 });
