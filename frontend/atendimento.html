@@ -1,36 +1,126 @@
 <!DOCTYPE html>
-<html>
-<head><link rel="stylesheet" href="style.css"></head>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Paciente</title>
+    <link rel="stylesheet" href="style.css">
+</head>
 <body>
+
 <div class="container">
-<h2>Atendimento</h2>
+    <h2>Cadastro de Paciente</h2>
 
-<input id="nome" placeholder="Nome">
-<input id="cpf" placeholder="CPF">
+    <input id="nome" placeholder="Nome Completo">
 
-<select id="tipo">
-  <option>Convenio</option>
-  <option>Particular</option>
-</select>
+    <input id="cpf" placeholder="CPF">
 
-<input type="file" id="foto">
+    <input id="rg" placeholder="RG">
 
-<button onclick="cadastrar()">Cadastrar</button>
+    <input id="nascimento" type="date">
+
+    <select id="sexo">
+        <option value="">Sexo</option>
+        <option>Masculino</option>
+        <option>Feminino</option>
+        <option>Outro</option>
+    </select>
+
+    <input id="telefone" placeholder="Telefone">
+
+    <input id="celular" placeholder="Celular">
+
+    <input id="email" type="email" placeholder="E-mail">
+
+    <input id="endereco" placeholder="Endereço">
+
+    <input id="numero" placeholder="Número">
+
+    <input id="bairro" placeholder="Bairro">
+
+    <input id="cidade" placeholder="Cidade">
+
+    <input id="estado" placeholder="Estado">
+
+    <input id="cep" placeholder="CEP">
+
+    <input id="nomeMae" placeholder="Nome da Mãe">
+
+    <input id="nomePai" placeholder="Nome do Pai">
+
+    <input id="responsavel" placeholder="Responsável (se menor de idade)">
+
+    <input id="contatoEmergencia" placeholder="Contato de Emergência">
+
+    <input id="telefoneEmergencia" placeholder="Telefone de Emergência">
+
+    <select id="tipo">
+        <option>Convênio</option>
+        <option>Particular</option>
+    </select>
+
+    <input id="convenio" placeholder="Nome do Convênio">
+
+    <input id="carteirinha" placeholder="Número da Carteirinha">
+
+    <input id="alergias" placeholder="Alergias">
+
+    <input id="tipoSanguineo" placeholder="Tipo Sanguíneo">
+
+    <textarea id="observacoes" placeholder="Observações Médicas"></textarea>
+
+    <label>Foto do Paciente</label>
+    <input type="file" id="foto" accept="image/*">
+
+    <button onclick="cadastrar()">Cadastrar</button>
 </div>
 
 <script>
 function cadastrar(){
- fetch("http://localhost:3000/atendimento",{
-  method:"POST",
-  headers:{"Content-Type":"application/json"},
-  body: JSON.stringify({
-    nome: nome.value,
-    cpf: cpf.value,
-    tipo: tipo.value
-  })
- });
- alert("Paciente enviado para triagem");
+
+    const paciente = {
+        nome: nome.value,
+        cpf: cpf.value,
+        rg: rg.value,
+        nascimento: nascimento.value,
+        sexo: sexo.value,
+        telefone: telefone.value,
+        celular: celular.value,
+        email: email.value,
+        endereco: endereco.value,
+        numero: numero.value,
+        bairro: bairro.value,
+        cidade: cidade.value,
+        estado: estado.value,
+        cep: cep.value,
+        nomeMae: nomeMae.value,
+        nomePai: nomePai.value,
+        responsavel: responsavel.value,
+        contatoEmergencia: contatoEmergencia.value,
+        telefoneEmergencia: telefoneEmergencia.value,
+        tipo: tipo.value,
+        convenio: convenio.value,
+        carteirinha: carteirinha.value,
+        alergias: alergias.value,
+        tipoSanguineo: tipoSanguineo.value,
+        observacoes: observacoes.value
+    };
+
+    fetch("http://localhost:3000/atendimento", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(paciente)
+    })
+    .then(() => {
+        alert("Paciente cadastrado e enviado para triagem!");
+    })
+    .catch(() => {
+        alert("Erro ao cadastrar paciente.");
+    });
 }
 </script>
+
 </body>
 </html>
