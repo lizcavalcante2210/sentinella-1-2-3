@@ -66,68 +66,55 @@ app.post("/login", (req, res) => {
 
 // ATENDIMENTO - cadastrar paciente
 app.post("/atendimento", (req, res) => {
-  const db = readDB();
+  try {
+    const db = readDB();
 
-  const paciente = {
-    id: Date.now(),
-    nome: req.body.nome,
-    cpf: req.body.cpf,
-    tipo: req.body.tipo,
-    status: "triagem",
-    createdAt: new Date()
-  };
+    const paciente = {
+      id: Date.now(),
 
-  db.pacientes.push(paciente);
-  writeDB(db);
+      nome: req.body.nome,
+      cpf: req.body.cpf,
+      nascimento: req.body.nascimento,
+      sexo: req.body.sexo,
+      telefone: req.body.telefone,
+      email: req.body.email,
 
-  res.json(paciente);
-});
+      endereco: req.body.endereco,
+      cidade: req.body.cidade,
+      estado: req.body.estado,
 
-// LISTAR PACIENTES
-app.get("/pacientes", (req, res) => {
-  const db = readDB();
+      tipo: req.body.tipo,
+      convenio: req.body.convenio,
 
-  res.json(db.pacientes);
-});
+      alergias: req.body.alergias,
+      tipoSanguineo: req.body.tipoSanguineo,
+      observacoes: req.body.observacoes,
 
-// TRIAGEM
-app.post("/triagem", (req, res) => {
-  const db = readDB();
+      status: "triagem",
+      createdAt: new Date().toISOString()
+    };
 
-  let risco = req.body.risco;
+    db.pacientes.push(paciente);
 
-  if (req.body.temperatura >= 39) {
-    risco = "vermelho";
-  } else if (req.body.temperatura >= 38) {
-    risco = "amarelo";
-  } else if (!risco) {
-    risco = "verde";
+    writeDB(db);
+
+    res.status(201).json({
+      sucesso: true,
+      paciente
+    });
+
+  } catch (erro) {
+
+    console.error(erro);
+
+    res.status(500).json({
+      sucesso: false,
+      mensagem: "Erro ao salvar paciente."
+    });
+
   }
-
-  const triagem = {
-    id: Date.now(),
-    nome: req.body.nome,
-    sintoma: req.body.sintoma,
-    temperatura: req.body.temperatura,
-    alergia: req.body.alergia,
-    observacao: req.body.observacao,
-    risco: risco,
-    status: "aguardando_medico",
-    createdAt: new Date()
-  };
-
-  db.triagens.push(triagem);
-  writeDB(db);
-
-  res.json(triagem);
 });
 
-// LISTAR TRIAGENS
-app.get("/triagens", (req, res) => {
-  const db = readDB();
-
-  res.json(db.triagens);
-});
 
 // ==================================================
 // MÍDIA INDOOR - TV
